@@ -1,10 +1,11 @@
 threads = 1 2 3 4
 problem_size = 100 200 400 800 1600 3200
+CC = gcc -O3
 
 all: profile
 	rm gen MatrixMultiply_None.c MatrixMultiply?.c mm* matrix_*
 gen: gen.c
-	gcc -o gen gen.c
+	$(CC) -o gen gen.c
 
 MatrixMultiply_None.c: MatrixMultiply.c
 	sed '/omp/d' MatrixMultiply.c > MatrixMultiply_None.c
@@ -13,10 +14,10 @@ MatrixMultiply1.c: MatrixMultiply.c
 	for num in $(threads) ; do sed "s/threads_count/$$num/" MatrixMultiply.c > MatrixMultiply$$num.c ; done
 
 mm: MatrixMultiply_None.c
-	gcc -o mm MatrixMultiply_None.c
+	$(CC) -o mm MatrixMultiply_None.c
 
 mm1: MatrixMultiply1.c
-	for num in $(threads) ; do gcc -fopenmp -o mm$$num MatrixMultiply$$num.c ; done
+	for num in $(threads) ; do $(CC) -fopenmp -o mm$$num MatrixMultiply$$num.c ; done
 
 .PHONY: profile
 profile: gen mm mm1
