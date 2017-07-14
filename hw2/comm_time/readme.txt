@@ -1,4 +1,4 @@
-PROBLEM 1: MPI_Send & MPI_Recv
+﻿PROBLEM 1: MPI_Send & MPI_Recv
 
 usage: 
     mpicc comm_time.c ; mpiexec -np 2 ./a.out (data length)
@@ -8,7 +8,7 @@ usage:
 	corei7-6500U @ 2.50GHz 双核
 	Linux Subsystem for Windows
 	gcc 4.8.4
-    openmpi 1.6.5
+	openmpi 1.6.5
 
 注：
 1)事先读写数组，使被传数据位于缓存中

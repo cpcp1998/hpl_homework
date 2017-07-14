@@ -1,0 +1,13 @@
+1st implementation:
+Sequential complexity: O(n^3)
+Parallel communication complexity: O(p*n^2)
+Isoefficiency function: n^3 >= C*p*n^2 ---> n >= C*p
+Scalability: M(C)/p = C^2*p
+
+2nd implementation:
+Sequential complexity: O(n^3)
+Parallel communication complexity: O(p*p*n*sqrt(n))
+Isoefficiency function: n^3 >= C*p^2*n*sqrt(n) ---> n >= (C*p^2)^(2/3)
+Scalability: M((C*p^2)^(2/3))/p = C^(4/3)*p^(5/3)
+
+The first implementation is more scalable
