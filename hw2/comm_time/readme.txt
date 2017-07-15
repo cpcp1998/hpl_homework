@@ -4,7 +4,7 @@ usage:
     mpicc comm_time.c ; mpiexec -np 2 ./a.out (data length)
     或者 make 自动生成报告
 
-本机profile.example运行环境:
+本机benchmark.example运行环境:
 	corei7-6500U @ 2.50GHz 双核
 	Linux Subsystem for Windows
 	gcc 4.8.4

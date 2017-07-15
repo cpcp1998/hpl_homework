@@ -10,11 +10,11 @@
 当第二个维度上分解较多时，文件读入跳跃，操作系统可能做了很多不需要的缓存，
 降低了读入的速度。
 
-另外提供了不包括文件读入时间的profile_without_io.example，
+另外提供了不包括文件读入时间的benchmark_without_io.example，
 可以看出分解退化与否在本机上对运行速度影响不大，
 只要进程数开到4以上就没有明显的速度差异，这可能也与本机核心数少有关。
 
-本机profile.example运行环境:
+本机benchmark.example运行环境:
 	corei7-6500U @ 2.50GHz 双核
 	Linux Subsystem for Windows
 	gcc 4.8.4
