@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
+#include <windows.h>
 #include <CL/cl.h>
 
 void check_err(cl_int err, const char* description) {
@@ -15,6 +15,12 @@ void check_err(cl_int err, const char* description) {
 	else {
 		printf("Succeeded: %s.\n",description);
 	}
+}
+
+double timediff(LARGE_INTEGER time0, LARGE_INTEGER time1) {
+	LARGE_INTEGER freq;
+	QueryPerformanceFrequency(&freq);
+	return (time1.QuadPart - time0.QuadPart) / (double)freq.QuadPart;
 }
 
 int main() {
@@ -44,7 +50,7 @@ int main() {
 	float *outvec;
 
 	int i, j;
-	clock_t time0, time1, time2, time3;
+	LARGE_INTEGER time0, time1, time2, time3;
 
 	//read input file
 	fp = fopen(matrix_name, "rb");
@@ -76,7 +82,7 @@ int main() {
 	for (i = 0; i < n; i++) printf("%6.2f ", invec[i]);
 	putchar('\n');*/
 
-	time0 = clock();
+	QueryPerformanceCounter(&time0);
 
 	//reading kernel code
 	fp = fopen(source_name, "r");
@@ -123,16 +129,16 @@ int main() {
 	printf("Calculating...\n");
 	global_size = _m; 
 	local_size = 256;
-	time1 = clock();
+	QueryPerformanceCounter(&time1);
 	clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &global_size, NULL, 0, NULL, NULL);
 	clFinish(queue);
-	time2 = clock();
+	QueryPerformanceCounter(&time2);
 	outvec = (float *)clEnqueueMapBuffer(queue, outvec_mem, CL_TRUE, CL_MAP_READ,0,m,0,NULL,NULL,&err);
 
 	//print output
-	printf("Output Vector %d\n", n);
-	for (i = 0; i < m; i++) printf("%6.2f ", outvec[i]);
-	putchar('\n');
+	//printf("Output Vector %d\n", n);
+	//for (i = 0; i < m; i++) printf("%6.2f ", outvec[i]);
+	//putchar('\n');
 
 	//cleanup
 	clEnqueueUnmapMemObject(queue, outvec_mem, outvec, 0, NULL, NULL);
@@ -146,12 +152,12 @@ int main() {
 	clReleaseCommandQueue(queue);
 	clReleaseContext(context);
 
-	time3 = clock();
+	QueryPerformanceCounter(&time3);
 
 	printf("Problem size: %dx%d\n", m, n);
-	printf("OpenCL time: %6.2fms\n", (time3 - time0) / (double)CLOCKS_PER_SEC * 1000);
-	printf("Calculating time: %6.2fms\n", (time2 - time1) / (double)CLOCKS_PER_SEC * 1000);
-	printf("Speed: %6.2fGFLOPS\n", m*n * 2.0 / (time2 - time1) * CLOCKS_PER_SEC / 1000000000);
+	printf("OpenCL time: %6.2fms\n", timediff(time0,time3));
+	printf("Calculating time: %6.6fms\n", timediff(time1,time2));
+	printf("Speed: %6.2fGFLOPS\n", m*n * 2.0 / timediff(time1,time2) / 1000000000);
 
 	return 0;
 }

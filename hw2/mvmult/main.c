@@ -22,14 +22,13 @@ int main(int argc, char *argv[]){
 	timei = MPI_Wtime();
 	MPI_Comm_size(MPI_COMM_WORLD, &p);
 
+// set the problem size
 	size[0] = size[1] = 0;
 	MPI_Dims_create(p, 2, size);
 	periodic[0] = periodic[1] = 0;
 	MPI_Cart_create(MPI_COMM_WORLD, 2, size, periodic, 1, &cart_comm);
 	MPI_Comm_rank(cart_comm, &rank);
 	MPI_Cart_coords(cart_comm, rank, 2, coords);
-//	printf("rank: %d\tx: %d\ty: %d\n", rank, coords[0], coords[1]);
-//	fflush(stdout);
 	MPI_Comm_split(cart_comm, coords[0], coords[1], &row_comm);
 	MPI_Comm_split(cart_comm, coords[1], coords[0], &col_comm);
 	file = fopen("matrix","r");
@@ -45,7 +44,8 @@ int main(int argc, char *argv[]){
 	colend = cols * (coords[1] + 1) / size[1];
 	rowwid = rowend - rowbegin;
 	colwid = colend - colbegin;
-//	printf("rank%d: x from %d to %d, y from %d to %d.\n",rank,rowbegin,rowend,colbegin,colend);
+
+//	read input file
 	a = (float *) malloc(rowwid * colwid * sizeof(float));
 	b = (float *) malloc(colwid * sizeof(float));
 	c = (float *) malloc(rowwid * sizeof(float));
@@ -66,6 +66,8 @@ int main(int argc, char *argv[]){
 		fclose(file);
 	}
 	MPI_Bcast(b, colwid, MPI_FLOAT, 0, col_comm);
+
+// do actual calculation
 	for(i = 0; i < rowwid; i++){
 		float temp = 0;
 		for(j = 0; j < colwid; j++) temp += a[i*colwid+j]*b[j];
@@ -74,6 +76,7 @@ int main(int argc, char *argv[]){
 	ret = (float *) malloc(rows * sizeof(float));
 	MPI_Allreduce(c, ret, rowwid, MPI_FLOAT, MPI_SUM, row_comm);
 
+// gather the results & output
 	int *rowwids, *rowdisp;
 	rowwids = (int *) malloc(size[0] * sizeof(int));
 	rowdisp = (int *) malloc(size[0] * sizeof(int));
