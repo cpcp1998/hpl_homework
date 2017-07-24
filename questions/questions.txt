@@ -1,0 +1,12 @@
+- MPI属于什么编程模型？
+MPI是一种消息传递模型，可以用于并行计算中不同进程之间的数据传递。
+
+- OpenCL里workgroup是什么？它在实际GPU硬件上的对应物是什么？
+workgroup包含一组workitem，同一个workgroup里的workitem共享一个local memory，共享锁。
+workgroup对应硬件上的compute unit。
+
+- 数据从CPU拷贝到GPU需要经过怎样的流程？
+在显卡的DRAM中分配足够的空间，将内存中的数据通过PCIe总线传到显存中。
+
+- 程序调优的基本思路是？
+通过profiling或者对程序的观察，找出程序中最耗时的部分，考虑从算法、代码、指令等方面进行优化。
